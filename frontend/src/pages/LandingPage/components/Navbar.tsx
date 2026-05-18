@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useTheme } from "../../../context/ThemeContext";
 
 interface NavbarProps {
@@ -30,20 +31,106 @@ function MoonIcon() {
 
 export default function Navbar({ scrollY }: NavbarProps) {
   const { theme, toggleTheme } = useTheme();
+  const [isOpen, setIsOpen] = useState(false);
   const isDark = theme === "dark";
 
   return (
     <nav style={{
       position: "sticky", top: 0, zIndex: 100,
-      background: scrollY > 40 ? "var(--nav-bg)" : "transparent",
-      backdropFilter: scrollY > 40 ? "blur(12px)" : "none",
-      borderBottom: scrollY > 40 ? "1px solid var(--border-strong)" : "1px solid transparent",
+      background: scrollY > 40 || isOpen ? "var(--nav-bg)" : "transparent",
+      backdropFilter: scrollY > 40 || isOpen ? "blur(12px)" : "none",
+      borderBottom: scrollY > 40 || isOpen ? "1px solid var(--border-strong)" : "1px solid transparent",
       transition: "all 0.3s",
-      padding: "0 40px",
     }}>
-      <div style={{ maxWidth: 1120, margin: "0 auto", height: 64, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      {/* Injected responsive rules */}
+      <style>{`
+        .nav-container {
+          padding: 0 40px;
+        }
+        .desktop-menu {
+          display: flex;
+          gap: 32;
+          align-items: center;
+        }
+        .desktop-actions {
+          display: flex;
+          gap: 10;
+          align-items: center;
+        }
+        .mobile-toggle-btn {
+          display: none;
+        }
+        .mobile-menu-overlay {
+          display: none;
+        }
+
+        /* Mobile Breakpoint */
+        @media (max-width: 768px) {
+          .nav-container {
+            padding: 0 16px; /* Tighter padding for phones */
+          }
+          .desktop-menu, .desktop-actions {
+            display: none !important; /* Hide standard row items */
+          }
+          .mobile-toggle-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            color: var(--text-body);
+            cursor: pointer;
+            padding: 8px;
+          }
+          /* Full-screen drawer layout dropping from the nav bar */
+          .mobile-menu-overlay {
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+            top: 64px;
+            left: 0;
+            width: 100%;
+            height: calc(100vh - 64px);
+            background: var(--nav-bg);
+            backdrop-filter: blur(12px);
+            padding: 24px;
+            box-sizing: border-box;
+            gap: 24px;
+            transform: ${isOpen ? "translateY(0)" : "translateY(-100%)"};
+            opacity: ${isOpen ? "1" : "0"};
+            pointer-events: ${isOpen ? "auto" : "none"};
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+            border-bottom: 1px solid var(--border-strong);
+          }
+          .mobile-links {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+          }
+          .mobile-links a {
+            font-size: 18px;
+            font-weight: 500;
+            text-decoration: none;
+            color: var(--text-body);
+          }
+          .mobile-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: auto; /* Push CTAs to the bottom of the drawer */
+            padding-bottom: 40px;
+          }
+          .mobile-actions a {
+            text-align: center;
+            padding: 14px;
+            font-size: 16px;
+          }
+        }
+      `}</style>
+
+      <div className="nav-container" style={{ maxWidth: 1120, margin: "0 auto", height: 64, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         {/* Logo */}
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, zIndex: 101 }}>
           <div style={{ width: 28, height: 28, background: "var(--logo-bg)", borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center" }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--logo-stroke)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
@@ -53,48 +140,83 @@ export default function Navbar({ scrollY }: NavbarProps) {
           <span style={{ fontFamily: "'Sora', sans-serif", fontWeight: 500, fontSize: 15, letterSpacing: "-0.01em", color: "var(--text-body)" }}>LeadFlow</span>
         </div>
 
-        {/* Nav links */}
-        <div style={{ display: "flex", gap: 32, alignItems: "center" }}>
+        {/* Desktop Nav links */}
+        <div className="desktop-menu" style={{ display: "flex", gap: 32, alignItems: "center" }}>
           <a className="nav-link" href="#features">Features</a>
           <a className="nav-link" href="#pipeline">Pipeline</a>
           <a className="nav-link" href="#about">About</a>
         </div>
 
-        {/* Actions */}
-        <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-          {/* Theme toggle */}
+        {/* Desktop Actions */}
+        <div className="desktop-actions">
           <button
             onClick={toggleTheme}
             aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
             style={{
-              width: 36,
-              height: 36,
-              borderRadius: 8,
+              width: 36, height: 36, borderRadius: 8,
+              border: "1px solid var(--border-medium)", background: "transparent",
+              color: "var(--text-muted)", cursor: "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              transition: "background 0.2s, color 0.2s", fontFamily: "inherit",
+            }}
+          >
+            {isDark ? <SunIcon /> : <MoonIcon />}
+          </button>
+          <a className="btn-ghost" href="/login">Sign in</a>
+          <a className="btn-primary" href="/register">Get started</a>
+        </div>
+
+        {/* Mobile Controls Right Side (Theme Toggle + Hamburger) */}
+        <div style={{ display: "flex", alignItems: "center", gap: 8, zIndex: 101 }}>
+          {/* Keep theme toggle accessible directly on mobile next to menu */}
+          <button
+            onClick={toggleTheme}
+            aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+            className="mobile-toggle-btn"
+            style={{
+              width: 36, height: 36, borderRadius: 8,
               border: "1px solid var(--border-medium)",
-              background: "transparent",
               color: "var(--text-muted)",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              transition: "background 0.2s, color 0.2s, border-color 0.2s",
-              fontFamily: "inherit",
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background = "var(--bg-hover)";
-              (e.currentTarget as HTMLButtonElement).style.color = "var(--text-body)";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background = "transparent";
-              (e.currentTarget as HTMLButtonElement).style.color = "var(--text-muted)";
             }}
           >
             {isDark ? <SunIcon /> : <MoonIcon />}
           </button>
 
-          <a className="btn-ghost" href="/login">Sign in</a>
-          <a className="btn-primary" href="/register">Get started</a>
+          {/* Hamburger button */}
+          <button 
+            className="mobile-toggle-btn"
+            onClick={() => setIsOpen(!isOpen)}
+            aria-label="Toggle navigation menu"
+          >
+            {isOpen ? (
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            ) : (
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
+            )}
+          </button>
         </div>
+
+        {/* Mobile Full-screen Dropdown Menu Drawer */}
+        <div className="mobile-menu-overlay">
+          <div className="mobile-links">
+            <a href="#features" onClick={() => setIsOpen(false)}>Features</a>
+            <a href="#pipeline" onClick={() => setIsOpen(false)}>Pipeline</a>
+            <a href="#about" onClick={() => setIsOpen(false)}>About</a>
+          </div>
+          
+          <div className="mobile-actions">
+            <a className="btn-ghost" href="/login" onClick={() => setIsOpen(false)}>Sign in</a>
+            <a className="btn-primary" href="/register" onClick={() => setIsOpen(false)}>Get started</a>
+          </div>
+        </div>
+
       </div>
     </nav>
   );
