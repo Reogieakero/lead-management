@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTheme } from "../../../context/ThemeContext";
+import Button from "../../../components/ui/Button";
 
 interface NavbarProps {
   scrollY: number;
@@ -144,7 +145,7 @@ export default function Navbar({ scrollY }: NavbarProps) {
       `}</style>
 
       <div className="nav-container" style={{ maxWidth: 1120, margin: "0 auto", height: 64, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, zIndex: 101 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, zIndex: 101, flex: 1 }}>
           <div style={{ width: 28, height: 28, background: "var(--logo-bg)", borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center" }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--logo-stroke)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
@@ -160,7 +161,7 @@ export default function Navbar({ scrollY }: NavbarProps) {
           <a className="nav-link" href="#about">About</a>
         </div>
 
-        <div className="desktop-actions">
+        <div className="desktop-actions" style={{ flex: 1, justifyContent: "flex-end" }}>
           <button
             onClick={toggleTheme}
             aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
@@ -168,8 +169,8 @@ export default function Navbar({ scrollY }: NavbarProps) {
           >
             {isDark ? <SunIcon /> : <MoonIcon />}
           </button>
-          <a className="btn-ghost" href="/login">Sign in</a>
-          <a className="btn-primary" href="/register">Get started</a>
+          <Button href="/login" variant="ghost" size="sm">Sign in</Button>
+          <Button href="/register" variant="primary" size="sm">Get started</Button>
         </div>
 
         <div style={{ display: "none", alignItems: "center", gap: 16, zIndex: 101 }} className="mobile-controls-wrapper">
@@ -215,8 +216,8 @@ export default function Navbar({ scrollY }: NavbarProps) {
           </div>
           
           <div className="mobile-actions">
-            <a className="btn-ghost" href="/login" onClick={() => setIsOpen(false)}>Sign in</a>
-            <a className="btn-primary" href="/register" onClick={() => setIsOpen(false)}>Get started</a>
+            <Button href="/login" variant="ghost" onClick={() => setIsOpen(false)}>Sign in</Button>
+            <Button href="/register" variant="primary" onClick={() => setIsOpen(false)}>Get started</Button>
           </div>
         </div>
 

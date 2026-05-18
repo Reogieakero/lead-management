@@ -1,3 +1,5 @@
+import Button from "../../../components/ui/Button";
+
 export default function CTA() {
   return (
     <section className="cta-section" style={{ textAlign: "center" }}>
@@ -24,7 +26,7 @@ export default function CTA() {
         <p style={{ fontSize: 16, color: "var(--text-muted)", marginBottom: 36, lineHeight: 1.7 }}>
           Ask your admin to set up your account, then log in and start tracking leads from day one.
         </p>
-        <a className="btn-primary" href="/login" style={{ padding: "14px 36px", fontSize: 15, display: "inline-block" }}>Go to dashboard</a>
+        <Button href="/login" size="lg">Go to dashboard</Button>
       </div>
     </section>
   );

@@ -1,5 +1,6 @@
 import DashboardPreview from "./DashboardPreview";
 import { useTheme } from "../../../context/ThemeContext";
+import Button from "../../../components/ui/Button";
 
 export default function Hero() {
   const { theme } = useTheme();
@@ -8,7 +9,7 @@ export default function Hero() {
   return (
     <section className="grid-bg" style={{ 
       position: "relative", 
-      padding: "60px 16px 60px", // Reduced padding to prevent content crowding on small devices
+      padding: "60px 16px 60px",
       overflow: "hidden" 
     }}>
       <div style={{
@@ -31,7 +32,7 @@ export default function Hero() {
         </div>
         <h1 className="fade-in" style={{
           fontFamily: "'Sora', sans-serif",
-          fontSize: "clamp(32px, 7vw, 64px)", // Smoother clamp values targeting optimal mobile presentation scales
+          fontSize: "clamp(32px, 7vw, 64px)",
           fontWeight: 600,
           lineHeight: 1.15,
           letterSpacing: "-0.03em",
@@ -44,7 +45,7 @@ export default function Hero() {
           <span style={{ color: isDark ? "rgba(240,240,240,0.35)" : "rgba(0,0,0,0.25)" }}>Every stage. Every deal.</span>
         </h1>
         <p className="fade-in" style={{
-          fontSize: "16px", // Reduced base size from 18px for structural readability on devices
+          fontSize: "16px",
           color: "var(--text-muted)",
           maxWidth: 520,
           margin: "0 auto 32px",
@@ -55,7 +56,6 @@ export default function Hero() {
           LeadFlow gives your sales team a single source of truth — track, filter, and close leads from every source, with full visibility for every role.
         </p>
         
-        {/* Buttons now wrap cleanly if screen width forces it */}
         <div className="fade-in" style={{ 
           display: "flex", 
           gap: 12, 
@@ -63,20 +63,20 @@ export default function Hero() {
           justifyContent: "center", 
           animationDelay: "0.3s" 
         }}>
-          <a className="btn-primary" href="/register" style={{ 
-            padding: "12px 24px", 
-            fontSize: 15,
-            flex: "1 1 auto",
-            maxWidth: "200px",
-            minWidth: "140px"
-          }}>Start for free</a>
-          <a className="btn-ghost" href="#features" style={{ 
-            padding: "12px 24px", 
-            fontSize: 15,
-            flex: "1 1 auto",
-            maxWidth: "200px",
-            minWidth: "140px"
-          }}>See how it works</a>
+          <Button
+            href="/register"
+            variant="primary"
+            style={{ flex: "1 1 auto", maxWidth: 200, minWidth: 140 }}
+          >
+            Start for free
+          </Button>
+          <Button
+            href="#features"
+            variant="ghost"
+            style={{ flex: "1 1 auto", maxWidth: 200, minWidth: 140 }}
+          >
+            See how it works
+          </Button>
         </div>
 
         <DashboardPreview />
