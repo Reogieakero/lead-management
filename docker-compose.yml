@@ -1,0 +1,36 @@
+services:
+  database:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  backend:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGO_URI=mongodb://database:27017/myapp
+    depends_on:
+      - database
+    volumes:
+      - ./backend:/app
+      - backend-node-modules:/app/node_modules
+    command: sh -c "npm install && npm run dev"
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - frontend-node-modules:/app/node_modules
+    command: sh -c "npm install && npm run dev"
+
+volumes:
+  mongo-data:
+  backend-node-modules:
+  frontend-node-modules:
