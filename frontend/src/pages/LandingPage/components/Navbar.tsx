@@ -7,7 +7,7 @@ interface NavbarProps {
 
 function SunIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="5"/>
       <line x1="12" y1="1" x2="12" y2="3"/>
       <line x1="12" y1="21" x2="12" y2="23"/>
@@ -23,7 +23,7 @@ function SunIcon() {
 
 function MoonIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
     </svg>
   );
@@ -42,22 +42,35 @@ export default function Navbar({ scrollY }: NavbarProps) {
       borderBottom: scrollY > 40 || isOpen ? "1px solid var(--border-strong)" : "1px solid transparent",
       transition: "all 0.3s",
     }}>
-      {/* Injected responsive rules */}
       <style>{`
         .nav-container {
           padding: 0 40px;
         }
         .desktop-menu {
           display: flex;
-          gap: 32;
+          gap: 32px;
           align-items: center;
         }
         .desktop-actions {
           display: flex;
-          gap: 10;
+          gap: 24px;
           align-items: center;
         }
-        .mobile-toggle-btn {
+        .icon-toggle-btn {
+          background: transparent;
+          border: none;
+          padding: 4px;
+          color: var(--text-muted);
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: color 0.2s;
+        }
+        .icon-toggle-btn:hover {
+          color: var(--text-body);
+        }
+        .mobile-hamburger-btn {
           display: none;
         }
         .mobile-menu-overlay {
@@ -67,22 +80,24 @@ export default function Navbar({ scrollY }: NavbarProps) {
         /* Mobile Breakpoint */
         @media (max-width: 768px) {
           .nav-container {
-            padding: 0 16px; /* Tighter padding for phones */
+            padding: 0 16px;
           }
           .desktop-menu, .desktop-actions {
-            display: none !important; /* Hide standard row items */
+            display: none !important;
           }
-          .mobile-toggle-btn {
+          .mobile-hamburger-btn {
             display: flex;
             align-items: center;
             justify-content: center;
             background: transparent;
             border: none;
-            color: var(--text-body);
+            color: var(--text-muted);
             cursor: pointer;
-            padding: 8px;
+            padding: 4px;
           }
-          /* Full-screen drawer layout dropping from the nav bar */
+          .mobile-hamburger-btn:hover {
+            color: var(--text-body);
+          }
           .mobile-menu-overlay {
             display: flex;
             flex-direction: column;
@@ -117,7 +132,7 @@ export default function Navbar({ scrollY }: NavbarProps) {
             display: flex;
             flex-direction: column;
             gap: 12px;
-            margin-top: auto; /* Push CTAs to the bottom of the drawer */
+            margin-top: auto;
             padding-bottom: 40px;
           }
           .mobile-actions a {
@@ -129,7 +144,6 @@ export default function Navbar({ scrollY }: NavbarProps) {
       `}</style>
 
       <div className="nav-container" style={{ maxWidth: 1120, margin: "0 auto", height: 64, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        {/* Logo */}
         <div style={{ display: "flex", alignItems: "center", gap: 8, zIndex: 101 }}>
           <div style={{ width: 28, height: 28, background: "var(--logo-bg)", borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center" }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--logo-stroke)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -140,25 +154,17 @@ export default function Navbar({ scrollY }: NavbarProps) {
           <span style={{ fontFamily: "'Sora', sans-serif", fontWeight: 500, fontSize: 15, letterSpacing: "-0.01em", color: "var(--text-body)" }}>LeadFlow</span>
         </div>
 
-        {/* Desktop Nav links */}
-        <div className="desktop-menu" style={{ display: "flex", gap: 32, alignItems: "center" }}>
+        <div className="desktop-menu">
           <a className="nav-link" href="#features">Features</a>
           <a className="nav-link" href="#pipeline">Pipeline</a>
           <a className="nav-link" href="#about">About</a>
         </div>
 
-        {/* Desktop Actions */}
         <div className="desktop-actions">
           <button
             onClick={toggleTheme}
             aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-            style={{
-              width: 36, height: 36, borderRadius: 8,
-              border: "1px solid var(--border-medium)", background: "transparent",
-              color: "var(--text-muted)", cursor: "pointer",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              transition: "background 0.2s, color 0.2s", fontFamily: "inherit",
-            }}
+            className="icon-toggle-btn"
           >
             {isDark ? <SunIcon /> : <MoonIcon />}
           </button>
@@ -166,25 +172,23 @@ export default function Navbar({ scrollY }: NavbarProps) {
           <a className="btn-primary" href="/register">Get started</a>
         </div>
 
-        {/* Mobile Controls Right Side (Theme Toggle + Hamburger) */}
-        <div style={{ display: "flex", alignItems: "center", gap: 8, zIndex: 101 }}>
-          {/* Keep theme toggle accessible directly on mobile next to menu */}
+        <div style={{ display: "none", alignItems: "center", gap: 16, zIndex: 101 }} className="mobile-controls-wrapper">
+          <style>{`
+            @media (max-width: 768px) {
+              .mobile-controls-wrapper { display: flex !important; }
+            }
+          `}</style>
+          
           <button
             onClick={toggleTheme}
             aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-            className="mobile-toggle-btn"
-            style={{
-              width: 36, height: 36, borderRadius: 8,
-              border: "1px solid var(--border-medium)",
-              color: "var(--text-muted)",
-            }}
+            className="icon-toggle-btn"
           >
             {isDark ? <SunIcon /> : <MoonIcon />}
           </button>
 
-          {/* Hamburger button */}
           <button 
-            className="mobile-toggle-btn"
+            className="mobile-hamburger-btn"
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Toggle navigation menu"
           >
@@ -203,7 +207,6 @@ export default function Navbar({ scrollY }: NavbarProps) {
           </button>
         </div>
 
-        {/* Mobile Full-screen Dropdown Menu Drawer */}
         <div className="mobile-menu-overlay">
           <div className="mobile-links">
             <a href="#features" onClick={() => setIsOpen(false)}>Features</a>
