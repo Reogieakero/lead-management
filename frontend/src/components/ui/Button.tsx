@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 type ButtonVariant = "primary" | "ghost";
 type ButtonSize = "sm" | "md" | "lg";
@@ -9,6 +10,8 @@ interface ButtonProps {
   children: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
+  // Internal SPA navigation
+  to?: string;
   // Anchor props
   href?: string;
   target?: string;
@@ -36,6 +39,7 @@ export default function Button({
   children,
   className,
   style,
+  to,
   href,
   target,
   rel,
@@ -48,6 +52,19 @@ export default function Button({
     ...style,
     ...(size !== "md" ? parseSizeStyle(size) : {}),
   };
+
+  if (to !== undefined) {
+    return (
+      <Link
+        to={to}
+        className={combinedClassName}
+        style={inlineStyle}
+        onClick={onClick as React.MouseEventHandler<HTMLAnchorElement>}
+      >
+        {children}
+      </Link>
+    );
+  }
 
   if (href !== undefined) {
     return (

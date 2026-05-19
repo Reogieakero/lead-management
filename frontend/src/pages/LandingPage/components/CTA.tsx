@@ -26,7 +26,7 @@ export default function CTA() {
         <p style={{ fontSize: 16, color: "var(--text-muted)", marginBottom: 36, lineHeight: 1.7 }}>
           Ask your admin to set up your account, then log in and start tracking leads from day one.
         </p>
-        <Button href="/login" size="lg">Go to dashboard</Button>
+        <Button to="/login" size="lg">Go to dashboard</Button>
       </div>
     </section>
   );

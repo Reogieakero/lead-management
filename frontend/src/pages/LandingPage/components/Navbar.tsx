@@ -169,8 +169,8 @@ export default function Navbar({ scrollY }: NavbarProps) {
           >
             {isDark ? <SunIcon /> : <MoonIcon />}
           </button>
-          <Button href="/login" variant="ghost" size="sm">Sign in</Button>
-          <Button href="/register" variant="primary" size="sm">Get started</Button>
+          <Button to="/login" variant="ghost" size="sm">Sign in</Button>
+          <Button to="/register" variant="primary" size="sm">Get started</Button>
         </div>
 
         <div style={{ display: "none", alignItems: "center", gap: 16, zIndex: 101 }} className="mobile-controls-wrapper">
