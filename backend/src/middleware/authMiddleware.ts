@@ -1,41 +1,57 @@
 import type { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import type { UserRole } from '../types/index.js';
 
+// Extend the Express Request type to include the decoded user information
 export interface AuthenticatedRequest extends Request {
   user?: {
     id: string;
-    role: UserRole;
+    role: string;
   };
 }
 
-export const authenticateToken = (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
-  const authHeader = req.headers.authorization;
-  const token = authHeader && authHeader.split(' ')[1];
+export const authenticateToken = (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  // Read the token directly from the HTTP-Only cookie we set during login
+  const token = req.cookies?.auth_token;
 
   if (!token) {
-    res.status(401).json({ message: 'Authentication token missing.' });
-    return;
+    return res.status(401).json({ 
+      message: 'Access Denied: No authentication token provided.' 
+    });
   }
 
   try {
-    const secret = process.env.JWT_SECRET || 'super_secret_key_change_me';
-    const decoded = jwt.verify(token, secret) as { id: string; role: UserRole };
-    
-    req.user = { id: decoded.id, role: decoded.role };
+    const decoded = jwt.verify(
+      token, 
+      process.env.JWT_SECRET || 'fallback_secret'
+    ) as { id: string; role: string };
+
+    // Attach user payload to the request object for downstream controllers/RBAC
+    req.user = decoded;
     next();
-  } catch {
-    res.status(403).json({ message: 'Invalid or expired token.' });
-    return;
+  } catch (error) {
+    return res.status(403).json({ 
+      message: 'Access Denied: Invalid or expired authentication token.' 
+    });
   }
 };
 
-export const authorizeRoles = (...allowedRoles: UserRole[]) => {
-  return (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
-    if (!req.user || !allowedRoles.includes(req.user.role)) {
-      res.status(403).json({ message: 'Access Denied: Insufficient Permissions.' });
-      return;
+export const authorizeRoles = (...allowedRoles: string[]) => {
+  return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      return res.status(401).json({ message: 'Authentication required.' });
     }
+
+    // Check if the user's role (e.g., 'Admin') matches the authorized roles for the endpoint
+    if (!allowedRoles.includes(req.user.role)) {
+      return res.status(403).json({ 
+        message: `Forbidden: Your role (${req.user.role}) does not have access to this resource.` 
+      });
+    }
+
     next();
   };
 };
