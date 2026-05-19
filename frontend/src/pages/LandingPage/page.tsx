@@ -7,8 +7,8 @@ import Pipeline from "./components/Pipeline";
 import Sources from "./components/Sources";
 import CTA from "./components/CTA";
 import Footer from "./components/Footer";
-import { GlobalStyles } from "./styles/LandingPage.styles";
-import { ThemeProvider, useTheme } from "../../context/ThemeContext";
+import { GlobalStyles } from "../../styles/page.styles";
+import { useTheme } from "../../context/ThemeContext";
 
 function LandingPageInner() {
   const [scrollY, setScrollY] = useState(0);
@@ -44,9 +44,5 @@ function LandingPageInner() {
 }
 
 export default function LandingPage() {
-  return (
-    <ThemeProvider>
-      <LandingPageInner />
-    </ThemeProvider>
-  );
+  return <LandingPageInner />;
 }
